@@ -35,3 +35,32 @@
 [14-08-2026 22:12:33.85] Current branch: main
 [14-08-2026 22:12:33.86] Remote repository: https://github.com/TokenCare/Documents.git
 [14-08-2026 22:12:45.64] Commit skipped: no staged changes
+[14-08-2026 22:13:10.47] Staged all local changes
+[14-08-2026 22:13:42.03] Created local commit: some changes
+[14-08-2026 22:14:15.73] Git Helper exited
+[15-08-2026  6:26:40.25] ============================================================
+[15-08-2026  6:26:40.27] TokenCare Documents Git Helper started
+[15-08-2026  6:26:40.29] Current directory: C:\Users\asish\Desktop\project\TokenCare\Documents
+[15-08-2026  6:26:41.53] Local repository: C:/Users/asish/Desktop/project/TokenCare/Documents
+[15-08-2026  6:26:41.54] Current branch: main
+[15-08-2026  6:26:41.55] Remote repository: https://github.com/TokenCare/Documents.git
+[15-08-2026  6:37:41.86] ============================================================
+[15-08-2026  6:37:41.89] TokenCare Documents Git Helper started
+[15-08-2026  6:37:41.91] Current directory: C:\Users\asish\Desktop\project\TokenCare\Documents
+[15-08-2026  6:37:42.43] Local repository: C:/Users/asish/Desktop/project/TokenCare/Documents
+[15-08-2026  6:37:42.44] Current branch: main
+[15-08-2026  6:37:42.45] Remote repository: https://github.com/TokenCare/Documents.git
+[15-08-2026  6:37:51.48] Synchronized Local MAIN with Remote MAIN
+[15-08-2026  6:38:43.61] ============================================================
+[15-08-2026  6:38:43.63] TokenCare Documents Git Helper started
+[15-08-2026  6:38:43.64] Current directory: C:\Users\asish\Desktop\project\TokenCare\Documents
+[15-08-2026  6:38:44.21] Local repository: C:/Users/asish/Desktop/project/TokenCare/Documents
+[15-08-2026  6:38:44.21] Current branch: main
+[15-08-2026  6:38:44.22] Remote repository: https://github.com/TokenCare/Documents.git
+[16-08-2026 11:19:51.28] ============================================================
+[16-08-2026 11:19:51.30] TokenCare Documents Git Helper started
+[16-08-2026 11:19:51.31] Current directory: C:\Users\asish\Desktop\project\TokenCare\Documents
+[16-08-2026 11:19:51.85] Local repository: C:/Users/asish/Desktop/project/TokenCare/Documents
+[16-08-2026 11:19:51.86] Current branch: main
+[16-08-2026 11:19:51.86] Remote repository: https://github.com/TokenCare/Documents.git
+[16-08-2026 11:20:09.36] Commit skipped: no staged changes
