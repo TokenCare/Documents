@@ -1,0 +1,5817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>
+    TokenCare | Healthcare Workflow & FHIR Playground
+</title>
+
+<style>
+
+/* =========================================================
+   DESIGN SYSTEM
+========================================================= */
+
+:root {
+
+    --bg: #07111d;
+
+    --surface: #0b1725;
+    --surface-2: #0f1d2d;
+    --surface-3: #13263a;
+
+    --border: #20374d;
+    --border-light: #294861;
+
+    --text: #edf5fb;
+    --text-2: #bfd0df;
+    --muted: #7890a6;
+
+    --teal: #50d2bd;
+    --teal-dark: #164d48;
+
+    --blue: #6da9ff;
+    --blue-dark: #193c68;
+
+    --purple: #b79cff;
+    --purple-dark: #392c68;
+
+    --yellow: #f5c95d;
+    --yellow-dark: #55451c;
+
+    --red: #ff7f87;
+    --red-dark: #55272d;
+
+    --green: #55d39c;
+    --green-dark: #174b37;
+
+    --orange: #ffad6a;
+
+    --shadow:
+        0 15px 45px rgba(0,0,0,.24);
+
+    --radius: 14px;
+}
+
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+
+    min-height: 100%;
+
+    background:
+        radial-gradient(
+            circle at 20% 0%,
+            #112b43 0,
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at 100% 20%,
+            #17203b 0,
+            transparent 30%
+        ),
+        var(--bg);
+
+    color: var(--text);
+
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+}
+
+button {
+    font-family: inherit;
+}
+
+button:focus-visible {
+    outline:
+        2px solid var(--teal);
+
+    outline-offset: 2px;
+}
+
+
+/* =========================================================
+   APPLICATION
+========================================================= */
+
+.app {
+    min-height: 100vh;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.header {
+
+    height: 70px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 0 20px;
+
+    border-bottom:
+        1px solid var(--border);
+
+    background:
+        rgba(7,17,29,.92);
+
+    backdrop-filter:
+        blur(16px);
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 100;
+}
+
+.brand {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+}
+
+.brand-logo {
+
+    width: 38px;
+
+    height: 38px;
+
+    border-radius: 11px;
+
+    display: grid;
+
+    place-items: center;
+
+    font-weight: 900;
+
+    color: #041018;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--teal),
+            var(--blue)
+        );
+}
+
+.brand-name {
+
+    font-size: 16px;
+
+    font-weight: 850;
+}
+
+.brand-subtitle {
+
+    color: var(--muted);
+
+    font-size: 9px;
+
+    margin-top: 2px;
+
+    letter-spacing: .04em;
+}
+
+.header-controls {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+}
+
+.header-button {
+
+    border:
+        1px solid var(--border);
+
+    background:
+        var(--surface);
+
+    color:
+        var(--text-2);
+
+    padding:
+        8px 11px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-size: 10px;
+
+    transition: .2s;
+}
+
+.header-button:hover {
+
+    border-color:
+        var(--border-light);
+
+    background:
+        var(--surface-2);
+}
+
+.header-button.primary {
+
+    background:
+        linear-gradient(
+            135deg,
+            #197e72,
+            #286da2
+        );
+
+    color: white;
+
+    border-color:
+        transparent;
+}
+
+.status-pill {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    padding:
+        6px 9px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 99px;
+
+    color: var(--muted);
+
+    font-size: 9px;
+}
+
+.status-dot {
+
+    width: 6px;
+
+    height: 6px;
+
+    border-radius: 50%;
+
+    background:
+        var(--green);
+
+    box-shadow:
+        0 0 10px var(--green);
+}
+
+
+/* =========================================================
+   MAIN LAYOUT
+========================================================= */
+
+.layout {
+
+    display: grid;
+
+    grid-template-columns:
+        250px
+        minmax(650px, 1fr);
+
+    min-height:
+        calc(100vh - 70px);
+}
+
+
+/* =========================================================
+   WORKFLOW SIDEBAR
+========================================================= */
+
+.sidebar {
+
+    border-right:
+        1px solid var(--border);
+
+    background:
+        rgba(8,18,30,.76);
+
+    padding:
+        18px 13px;
+
+    overflow-y: auto;
+}
+
+.sidebar-label {
+
+    color:
+        var(--teal);
+
+    font-size: 9px;
+
+    font-weight: 850;
+
+    letter-spacing:
+        .15em;
+
+    text-transform:
+        uppercase;
+
+    padding:
+        0 7px;
+}
+
+.sidebar-heading {
+
+    font-size: 17px;
+
+    font-weight: 850;
+
+    padding:
+        6px 7px 14px;
+}
+
+.workflow-item {
+
+    position: relative;
+
+    display: grid;
+
+    grid-template-columns:
+        28px 1fr;
+
+    gap: 8px;
+
+    padding:
+        8px 7px;
+
+    margin:
+        2px 0;
+
+    border:
+        1px solid transparent;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    transition: .2s;
+}
+
+.workflow-item:hover {
+
+    background:
+        #0d2032;
+}
+
+.workflow-item.active {
+
+    background:
+        linear-gradient(
+            90deg,
+            #103a39,
+            #102538
+        );
+
+    border-color:
+        #285c59;
+}
+
+.workflow-number {
+
+    width: 24px;
+
+    height: 24px;
+
+    border-radius: 50%;
+
+    border:
+        1px solid #345069;
+
+    display: grid;
+
+    place-items: center;
+
+    color:
+        var(--muted);
+
+    font-size: 9px;
+
+    font-weight: 800;
+}
+
+.workflow-item.completed
+.workflow-number {
+
+    background:
+        var(--green-dark);
+
+    color:
+        var(--green);
+
+    border-color:
+        #31775a;
+}
+
+.workflow-item.active
+.workflow-number {
+
+    background:
+        var(--teal-dark);
+
+    color:
+        var(--teal);
+
+    border-color:
+        var(--teal);
+}
+
+.workflow-name {
+
+    font-size: 10px;
+
+    font-weight: 750;
+
+    line-height: 1.3;
+}
+
+.workflow-role {
+
+    color:
+        var(--muted);
+
+    font-size: 8px;
+
+    margin-top: 3px;
+}
+
+.sidebar-bottom {
+
+    border-top:
+        1px solid var(--border);
+
+    margin-top:
+        15px;
+
+    padding:
+        14px 7px;
+}
+
+.progress-label {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    color:
+        var(--muted);
+
+    font-size: 9px;
+
+    margin-bottom:
+        6px;
+}
+
+.progress-track {
+
+    height: 5px;
+
+    background:
+        #14273a;
+
+    border-radius:
+        99px;
+
+    overflow: hidden;
+}
+
+.progress-value {
+
+    height: 100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--teal),
+            var(--blue)
+        );
+
+    transition:
+        width .35s ease;
+}
+
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.content {
+
+    padding:
+        18px;
+
+    min-width: 0;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   CASE HEADER
+========================================================= */
+
+.case-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 18px;
+
+    margin-bottom:
+        13px;
+}
+
+.case-title {
+
+    font-size: 22px;
+
+    font-weight: 850;
+
+    margin:
+        3px 0 4px;
+}
+
+.case-description {
+
+    color:
+        var(--muted);
+
+    font-size: 10px;
+
+    line-height: 1.55;
+
+    max-width:
+        800px;
+}
+
+.case-meta {
+
+    display: flex;
+
+    gap: 6px;
+
+    align-items:
+        flex-start;
+
+    flex-wrap: wrap;
+
+    justify-content:
+        flex-end;
+}
+
+.meta {
+
+    border:
+        1px solid var(--border);
+
+    background:
+        var(--surface);
+
+    border-radius:
+        8px;
+
+    padding:
+        7px 9px;
+
+    font-size:
+        9px;
+
+    color:
+        var(--text-2);
+}
+
+
+/* =========================================================
+   UPPER TWO-PANEL AREA
+========================================================= */
+
+.dual-view {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:
+        12px;
+
+    min-height:
+        390px;
+}
+
+
+/* =========================================================
+   PANEL
+========================================================= */
+
+.panel {
+
+    border:
+        1px solid var(--border);
+
+    background:
+        rgba(11,23,37,.94);
+
+    border-radius:
+        var(--radius);
+
+    box-shadow:
+        var(--shadow);
+
+    overflow:
+        hidden;
+
+    min-width:
+        0;
+}
+
+.panel-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        10px;
+
+    padding:
+        11px 13px;
+
+    border-bottom:
+        1px solid var(--border);
+
+    background:
+        #0d1c2c;
+}
+
+.panel-title {
+
+    display: flex;
+
+    align-items:
+        center;
+
+    gap:
+        8px;
+
+    font-size:
+        11px;
+
+    font-weight:
+        850;
+}
+
+.panel-icon {
+
+    width:
+        23px;
+
+    height:
+        23px;
+
+    display:
+        grid;
+
+    place-items:
+        center;
+
+    border-radius:
+        7px;
+
+    font-size:
+        11px;
+
+}
+
+.business-icon {
+
+    background:
+        #183e3b;
+
+    color:
+        var(--teal);
+}
+
+.tech-icon {
+
+    background:
+        #27375a;
+
+    color:
+        var(--blue);
+}
+
+.panel-label {
+
+    color:
+        var(--muted);
+
+    font-size:
+        8px;
+
+    text-transform:
+        uppercase;
+
+    letter-spacing:
+        .1em;
+}
+
+.panel-body {
+
+    padding:
+        14px;
+
+    overflow:
+        auto;
+
+    max-height:
+        455px;
+}
+
+
+/* =========================================================
+   BUSINESS PANEL
+========================================================= */
+
+.story-label {
+
+    color:
+        var(--teal);
+
+    font-size:
+        8px;
+
+    text-transform:
+        uppercase;
+
+    letter-spacing:
+        .13em;
+
+    font-weight:
+        850;
+
+    margin-bottom:
+        7px;
+}
+
+.story-title {
+
+    font-size:
+        17px;
+
+    font-weight:
+        800;
+
+    line-height:
+        1.3;
+
+    margin-bottom:
+        8px;
+}
+
+.story-text {
+
+    color:
+        var(--text-2);
+
+    font-size:
+        11px;
+
+    line-height:
+        1.65;
+
+    margin:
+        0 0 12px;
+}
+
+.business-block {
+
+    border:
+        1px solid var(--border);
+
+    background:
+        #0a1827;
+
+    border-radius:
+        10px;
+
+    padding:
+        11px;
+
+    margin-bottom:
+        9px;
+}
+
+.business-block-title {
+
+    font-size:
+        9px;
+
+    font-weight:
+        850;
+
+    color:
+        var(--muted);
+
+    text-transform:
+        uppercase;
+
+    letter-spacing:
+        .08em;
+
+    margin-bottom:
+        7px;
+}
+
+.business-block p {
+
+    margin:
+        0;
+
+    color:
+        var(--text-2);
+
+    font-size:
+        10px;
+
+    line-height:
+        1.55;
+}
+
+.impact-grid {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:
+        7px;
+}
+
+.impact {
+
+    border:
+        1px solid var(--border);
+
+    border-radius:
+        8px;
+
+    padding:
+        9px;
+
+    background:
+        #0b1a29;
+}
+
+.impact strong {
+
+    display:
+        block;
+
+    font-size:
+        13px;
+
+    color:
+        var(--teal);
+
+    margin-bottom:
+        3px;
+}
+
+.impact span {
+
+    color:
+        var(--muted);
+
+    font-size:
+        8px;
+
+    line-height:
+        1.4;
+}
+
+
+/* =========================================================
+   TECH PANEL
+========================================================= */
+
+.tech-event {
+
+    display:
+        flex;
+
+    align-items:
+        flex-start;
+
+    gap:
+        9px;
+
+    margin-bottom:
+        11px;
+}
+
+.tech-event-dot {
+
+    width:
+        9px;
+
+    height:
+        9px;
+
+    border-radius:
+        50%;
+
+    background:
+        var(--blue);
+
+    box-shadow:
+        0 0 12px rgba(109,169,255,.35);
+
+    margin-top:
+        4px;
+
+    flex:
+        none;
+}
+
+.tech-event-content {
+
+    min-width:
+        0;
+}
+
+.tech-event-title {
+
+    font-size:
+        10px;
+
+    font-weight:
+        800;
+
+    margin-bottom:
+        3px;
+}
+
+.tech-event-text {
+
+    color:
+        var(--muted);
+
+    font-size:
+        9px;
+
+    line-height:
+        1.5;
+}
+
+.fhir-flow {
+
+    border:
+        1px solid var(--border);
+
+    background:
+        #07131f;
+
+    border-radius:
+        10px;
+
+    padding:
+        10px;
+
+    margin:
+        11px 0;
+}
+
+.fhir-flow-title {
+
+    color:
+        var(--muted);
+
+    font-size:
+        8px;
+
+    text-transform:
+        uppercase;
+
+    letter-spacing:
+        .1em;
+
+    margin-bottom:
+        8px;
+}
+
+.fhir-flow-row {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        6px;
+
+    flex-wrap:
+        wrap;
+}
+
+.fhir-chip {
+
+    padding:
+        5px 7px;
+
+    border:
+        1px solid #315170;
+
+    background:
+        #0d2439;
+
+    color:
+        #a9c9e8;
+
+    border-radius:
+        6px;
+
+    font:
+        8px
+        ui-monospace,
+        SFMono-Regular,
+        Consolas,
+        monospace;
+
+    cursor:
+        pointer;
+
+    transition:
+        .2s;
+}
+
+.fhir-chip:hover,
+.fhir-chip.active {
+
+    border-color:
+        var(--blue);
+
+    background:
+        #153658;
+
+    color:
+        white;
+}
+
+.fhir-arrow {
+
+    color:
+        #45627d;
+
+    font-size:
+        10px;
+}
+
+.code-box {
+
+    border:
+        1px solid var(--border);
+
+    border-radius:
+        9px;
+
+    overflow:
+        hidden;
+
+    margin-top:
+        9px;
+}
+
+.code-header {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    padding:
+        7px 9px;
+
+    background:
+        #0e1e30;
+
+    color:
+        var(--muted);
+
+    font-size:
+        8px;
+
+    border-bottom:
+        1px solid var(--border);
+}
+
+pre {
+
+    margin:
+        0;
+
+    padding:
+        11px;
+
+    background:
+        #050e17;
+
+    color:
+        #b8d9d1;
+
+    overflow:
+        auto;
+
+    font:
+        8px/1.55
+        ui-monospace,
+        SFMono-Regular,
+        Consolas,
+        monospace;
+}
+
+
+/* =========================================================
+   LOWER GRAPH
+========================================================= */
+
+.graph-panel {
+
+    margin-top:
+        12px;
+
+    border:
+        1px solid var(--border);
+
+    background:
+        rgba(9,21,34,.97);
+
+    border-radius:
+        var(--radius);
+
+    overflow:
+        hidden;
+
+    box-shadow:
+        var(--shadow);
+}
+
+.graph-header {
+
+    padding:
+        11px 13px;
+
+    border-bottom:
+        1px solid var(--border);
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        center;
+
+    gap:
+        10px;
+}
+
+.graph-title {
+
+    font-size:
+        11px;
+
+    font-weight:
+        850;
+}
+
+.graph-subtitle {
+
+    color:
+        var(--muted);
+
+    font-size:
+        8px;
+
+    margin-top:
+        3px;
+}
+
+.graph-actions {
+
+    display:
+        flex;
+
+    gap:
+        5px;
+
+    flex-wrap:
+        wrap;
+}
+
+.graph-button {
+
+    border:
+        1px solid var(--border);
+
+    background:
+        var(--surface-2);
+
+    color:
+        var(--text-2);
+
+    border-radius:
+        6px;
+
+    padding:
+        6px 8px;
+
+    font-size:
+        8px;
+
+    cursor:
+        pointer;
+}
+
+.graph-body {
+
+    position:
+        relative;
+
+    height:
+        430px;
+
+    overflow:
+        hidden;
+
+    background:
+        radial-gradient(
+            circle at center,
+            #102337,
+            #07131f 70%
+        );
+}
+
+.graph-grid {
+
+    position:
+        absolute;
+
+    inset:
+        0;
+
+    background-image:
+        linear-gradient(
+            rgba(54,89,116,.16) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(54,89,116,.16) 1px,
+            transparent 1px
+        );
+
+    background-size:
+        28px 28px;
+}
+
+.graph-svg {
+
+    position:
+        absolute;
+
+    inset:
+        0;
+
+    width:
+        100%;
+
+    height:
+        100%;
+
+    pointer-events:
+        none;
+}
+
+.graph-edge {
+
+    stroke:
+        #2b4a63;
+
+    stroke-width:
+        1.2;
+
+    fill:
+        none;
+
+    opacity:
+        .75;
+
+    transition:
+        .35s;
+}
+
+.graph-edge.active {
+
+    stroke:
+        var(--teal);
+
+    stroke-width:
+        2.5;
+
+    opacity:
+        1;
+
+    filter:
+        drop-shadow(
+            0 0 4px
+            rgba(80,210,189,.45)
+        );
+}
+
+.graph-edge.pending {
+
+    stroke:
+        var(--yellow);
+
+    stroke-dasharray:
+        5 5;
+
+    opacity:
+        .8;
+}
+
+.graph-node {
+
+    position:
+        absolute;
+
+    transform:
+        translate(-50%,-50%);
+
+    min-width:
+        78px;
+
+    max-width:
+        105px;
+
+    padding:
+        7px 8px;
+
+    border:
+        1px solid #31506b;
+
+    border-radius:
+        9px;
+
+    background:
+        #102438;
+
+    box-shadow:
+        0 7px 20px rgba(0,0,0,.22);
+
+    cursor:
+        pointer;
+
+    transition:
+        .3s;
+
+    z-index:
+        5;
+
+    text-align:
+        center;
+}
+
+.graph-node:hover {
+
+    transform:
+        translate(-50%,-50%)
+        scale(1.06);
+
+    border-color:
+        var(--blue);
+}
+
+.graph-node.active {
+
+    border-color:
+        var(--teal);
+
+    background:
+        #123a39;
+
+    box-shadow:
+        0 0 0 2px
+        rgba(80,210,189,.1),
+        0 0 25px
+        rgba(80,210,189,.15);
+}
+
+.graph-node.pending {
+
+    border-color:
+        var(--yellow);
+
+    background:
+        #302b16;
+}
+
+.graph-node.complete {
+
+    border-color:
+        #3c745c;
+
+    background:
+        #102d26;
+}
+
+.graph-node-title {
+
+    font-size:
+        8px;
+
+    font-weight:
+        850;
+
+    line-height:
+        1.3;
+}
+
+.graph-node-state {
+
+    color:
+        var(--muted);
+
+    font-size:
+        7px;
+
+    margin-top:
+        3px;
+}
+
+.graph-node.active
+.graph-node-state {
+
+    color:
+        var(--teal);
+}
+
+.graph-node.complete
+.graph-node-state {
+
+    color:
+        var(--green);
+}
+
+.graph-legend {
+
+    display:
+        flex;
+
+    gap:
+        12px;
+
+    padding:
+        9px 13px;
+
+    border-top:
+        1px solid var(--border);
+
+    color:
+        var(--muted);
+
+    font-size:
+        8px;
+
+    flex-wrap:
+        wrap;
+}
+
+.legend-item {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        5px;
+}
+
+.legend-dot {
+
+    width:
+        7px;
+
+    height:
+        7px;
+
+    border-radius:
+        50%;
+}
+
+.legend-active {
+    background:
+        var(--teal);
+}
+
+.legend-complete {
+    background:
+        var(--green);
+}
+
+.legend-pending {
+    background:
+        var(--yellow);
+}
+
+
+/* =========================================================
+   INSPECTOR DRAWER
+========================================================= */
+
+.inspector {
+
+    position:
+        fixed;
+
+    right:
+        15px;
+
+    bottom:
+        15px;
+
+    width:
+        380px;
+
+    max-width:
+        calc(100vw - 30px);
+
+    max-height:
+        75vh;
+
+    background:
+        #081522;
+
+    border:
+        1px solid var(--border-light);
+
+    border-radius:
+        13px;
+
+    box-shadow:
+        0 25px 70px rgba(0,0,0,.5);
+
+    z-index:
+        200;
+
+    transform:
+        translateY(
+            calc(100% + 30px)
+        );
+
+    transition:
+        transform .3s ease;
+
+    overflow:
+        hidden;
+}
+
+.inspector.open {
+
+    transform:
+        translateY(0);
+}
+
+.inspector-header {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    padding:
+        11px 13px;
+
+    border-bottom:
+        1px solid var(--border);
+
+    background:
+        #0d1d2d;
+}
+
+.inspector-title {
+
+    font-size:
+        11px;
+
+    font-weight:
+        850;
+}
+
+.close-inspector {
+
+    border:
+        0;
+
+    background:
+        transparent;
+
+    color:
+        var(--muted);
+
+    cursor:
+        pointer;
+
+    font-size:
+        15px;
+}
+
+.inspector-body {
+
+    padding:
+        13px;
+
+    overflow:
+        auto;
+
+    max-height:
+        calc(75vh - 50px);
+}
+
+.inspector-description {
+
+    color:
+        var(--muted);
+
+    font-size:
+        9px;
+
+    line-height:
+        1.5;
+
+    margin-bottom:
+        10px;
+}
+
+.inspector-field {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        80px 1fr;
+
+    gap:
+        8px;
+
+    margin-bottom:
+        7px;
+}
+
+.inspector-field label {
+
+    color:
+        var(--muted);
+
+    font-size:
+        8px;
+}
+
+.inspector-field span {
+
+    font-size:
+        8px;
+
+    word-break:
+        break-word;
+}
+
+.inspector-code {
+
+    background:
+        #050e17;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:
+        7px;
+
+    max-height:
+        280px;
+
+    overflow:
+        auto;
+}
+
+
+/* =========================================================
+   TOKEN BADGE
+========================================================= */
+
+.token-bar {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        10px;
+
+    padding:
+        8px 10px;
+
+    border:
+        1px solid #31516c;
+
+    background:
+        #0a1b2c;
+
+    border-radius:
+        9px;
+
+    margin-bottom:
+        10px;
+}
+
+.token-id {
+
+    font:
+        9px
+        ui-monospace,
+        SFMono-Regular,
+        Consolas,
+        monospace;
+
+    color:
+        #a9c9e8;
+}
+
+.token-state {
+
+    color:
+        var(--teal);
+
+    font-size:
+        8px;
+
+    font-weight:
+        800;
+}
+
+
+/* =========================================================
+   RESPONSIVENESS
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .layout {
+
+        grid-template-columns:
+            215px
+            minmax(0,1fr);
+    }
+
+    .dual-view {
+
+        grid-template-columns:
+            1fr;
+    }
+
+    .panel-body {
+
+        max-height:
+            none;
+    }
+
+    .graph-body {
+
+        height:
+            390px;
+    }
+}
+
+
+@media (max-width: 760px) {
+
+    .header {
+
+        height:
+            auto;
+
+        padding:
+            11px;
+
+        flex-wrap:
+            wrap;
+    }
+
+    .header-controls {
+
+        width:
+            100%;
+
+        justify-content:
+            flex-start;
+
+        overflow-x:
+            auto;
+    }
+
+    .layout {
+
+        display:
+            block;
+    }
+
+    .sidebar {
+
+        border-right:
+            0;
+
+        border-bottom:
+            1px solid var(--border);
+
+        max-height:
+            245px;
+    }
+
+    .workflow-item {
+
+        display:
+            inline-grid;
+
+        width:
+            190px;
+
+        margin-right:
+            4px;
+    }
+
+    .sidebar {
+
+        white-space:
+            nowrap;
+
+        overflow-x:
+            auto;
+    }
+
+    .sidebar-bottom {
+
+        display:
+            none;
+    }
+
+    .content {
+
+        padding:
+            11px;
+    }
+
+    .case-header {
+
+        display:
+            block;
+    }
+
+    .case-meta {
+
+        justify-content:
+            flex-start;
+
+        margin-top:
+            10px;
+    }
+
+    .graph-body {
+
+        height:
+            430px;
+
+        overflow-x:
+            auto;
+    }
+
+    .graph-node {
+
+        min-width:
+            70px;
+
+        max-width:
+            90px;
+    }
+
+    .inspector {
+
+        width:
+            calc(100vw - 20px);
+
+        right:
+            10px;
+
+        bottom:
+            10px;
+    }
+}
+
+
+@media (max-width: 480px) {
+
+    .impact-grid {
+
+        grid-template-columns:
+            1fr;
+    }
+
+    .graph-body {
+
+        height:
+            500px;
+    }
+
+    .case-title {
+
+        font-size:
+            19px;
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<header class="header">
+
+    <div class="brand">
+
+        <div class="brand-logo">
+            T
+        </div>
+
+        <div>
+
+            <div class="brand-name">
+                TokenCare
+            </div>
+
+            <div class="brand-subtitle">
+                DIGITAL HEALTHCARE WORKFLOW + FHIR PLAYGROUND
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="header-controls">
+
+        <div class="status-pill">
+
+            <span class="status-dot"></span>
+
+            Live simulation
+
+        </div>
+
+
+        <button
+            class="header-button"
+            id="previousBtn"
+        >
+            ← Previous
+        </button>
+
+
+        <button
+            class="header-button primary"
+            id="nextBtn"
+        >
+            Next event →
+        </button>
+
+
+        <button
+            class="header-button"
+            id="playBtn"
+        >
+            ▶ Auto play
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<div class="layout">
+
+
+<!-- =====================================================
+     LEFT WORKFLOW
+===================================================== -->
+
+<aside class="sidebar">
+
+    <div class="sidebar-label">
+        Care journey
+    </div>
+
+    <div class="sidebar-heading">
+        One case · many systems
+    </div>
+
+
+    <div id="workflowList"></div>
+
+
+    <div class="sidebar-bottom">
+
+        <div class="progress-label">
+
+            <span>
+                Journey progress
+            </span>
+
+            <span id="progressText">
+                1 / 12
+            </span>
+
+        </div>
+
+
+        <div class="progress-track">
+
+            <div
+                class="progress-value"
+                id="progressValue"
+            ></div>
+
+        </div>
+
+    </div>
+
+</aside>
+
+
+<!-- =====================================================
+     CONTENT
+===================================================== -->
+
+<main class="content">
+
+
+<!-- CASE HEADER -->
+
+<section class="case-header">
+
+    <div>
+
+        <div class="sidebar-label">
+            Production-style synthetic case
+        </div>
+
+        <div
+            class="case-title"
+            id="caseTitle"
+        >
+            Patient enters digital healthcare journey
+        </div>
+
+        <div
+            class="case-description"
+            id="caseDescription"
+        ></div>
+
+    </div>
+
+
+    <div class="case-meta">
+
+        <div class="meta">
+            Patient · Demo
+        </div>
+
+        <div class="meta">
+            Cardiology
+        </div>
+
+        <div class="meta">
+            Token · TC-00421
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     UPPER DUAL VIEW
+===================================================== -->
+
+<section class="dual-view">
+
+
+<!-- =====================================================
+     BUSINESS PANEL
+===================================================== -->
+
+<section class="panel">
+
+    <div class="panel-header">
+
+        <div class="panel-title">
+
+            <div
+                class="panel-icon business-icon"
+            >
+                B
+            </div>
+
+            Business / Human Perspective
+
+        </div>
+
+        <div class="panel-label">
+            What actually happened?
+        </div>
+
+    </div>
+
+
+    <div
+        class="panel-body"
+        id="businessPanel"
+    ></div>
+
+</section>
+
+
+<!-- =====================================================
+     TECH PANEL
+===================================================== -->
+
+<section class="panel">
+
+    <div class="panel-header">
+
+        <div class="panel-title">
+
+            <div
+                class="panel-icon tech-icon"
+            >
+                F
+            </div>
+
+            Technology / FHIR Perspective
+
+        </div>
+
+        <div class="panel-label">
+            How did the data evolve?
+        </div>
+
+    </div>
+
+
+    <div
+        class="panel-body"
+        id="techPanel"
+    ></div>
+
+</section>
+
+</section>
+
+
+<!-- =====================================================
+     RESOURCE GRAPH
+===================================================== -->
+
+<section class="graph-panel">
+
+    <div class="graph-header">
+
+        <div>
+
+            <div class="graph-title">
+                Live Healthcare Resource Graph
+            </div>
+
+            <div class="graph-subtitle">
+                Every workflow event changes the digital state
+                of the healthcare ecosystem.
+            </div>
+
+        </div>
+
+
+        <div class="graph-actions">
+
+            <button
+                class="graph-button"
+                id="resetGraphBtn"
+            >
+                Reset graph
+            </button>
+
+            <button
+                class="graph-button"
+                id="showAllBtn"
+            >
+                Show all resources
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div
+        class="graph-body"
+        id="graphBody"
+    >
+
+        <div class="graph-grid"></div>
+
+        <svg
+            class="graph-svg"
+            id="graphSvg"
+        ></svg>
+
+        <div id="graphNodes"></div>
+
+    </div>
+
+
+    <div class="graph-legend">
+
+        <div class="legend-item">
+
+            <span
+                class="legend-dot legend-active"
+            ></span>
+
+            Changed in current event
+
+        </div>
+
+
+        <div class="legend-item">
+
+            <span
+                class="legend-dot legend-complete"
+            ></span>
+
+            Existing / completed
+
+        </div>
+
+
+        <div class="legend-item">
+
+            <span
+                class="legend-dot legend-pending"
+            ></span>
+
+            Next expected state
+
+        </div>
+
+
+        <div class="legend-item">
+
+            Click a node to inspect FHIR JSON
+
+        </div>
+
+    </div>
+
+</section>
+
+
+</main>
+
+</div>
+
+
+<!-- =====================================================
+     FHIR INSPECTOR
+===================================================== -->
+
+<div
+    class="inspector"
+    id="inspector"
+>
+
+    <div class="inspector-header">
+
+        <div
+            class="inspector-title"
+            id="inspectorTitle"
+        >
+            Resource inspector
+        </div>
+
+        <button
+            class="close-inspector"
+            id="closeInspector"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <div
+        class="inspector-body"
+        id="inspectorBody"
+    ></div>
+
+</div>
+
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   SYNTHETIC FHIR RESOURCE MODEL
+========================================================= */
+
+const RESOURCES = {
+
+    Patient: {
+
+        type: "Patient",
+
+        id: "pat-00421",
+
+        label: "Patient",
+
+        description:
+            "Represents the patient participating in the care journey.",
+
+        status:
+            "active",
+
+        introducedAt:
+            0,
+
+        json: {
+
+            resourceType:
+                "Patient",
+
+            id:
+                "pat-00421",
+
+            identifier: [
+
+                {
+
+                    system:
+                        "urn:tokencare:demo-abha",
+
+                    value:
+                        "DEMO-ABHA-XXXX-421"
+
+                }
+
+            ],
+
+            name: [
+
+                {
+
+                    text:
+                        "Demo Patient"
+
+                }
+
+            ],
+
+            gender:
+                "male",
+
+            birthDate:
+                "1984-04-12"
+
+        }
+
+    },
+
+
+    QuestionnaireResponse: {
+
+        type:
+            "QuestionnaireResponse",
+
+        id:
+            "qr-00421",
+
+        label:
+            "AI Intake",
+
+        description:
+            "Structured answers generated from the patient-AI conversation.",
+
+        introducedAt:
+            1,
+
+        json: {
+
+            resourceType:
+                "QuestionnaireResponse",
+
+            id:
+                "qr-00421",
+
+            status:
+                "completed",
+
+            subject: {
+
+                reference:
+                    "Patient/pat-00421"
+
+            },
+
+            item: [
+
+                {
+
+                    linkId:
+                        "chief-complaint",
+
+                    answer: [
+
+                        {
+
+                            valueString:
+                                "Chest discomfort for three days with intermittent shortness of breath."
+
+                        }
+
+                    ]
+
+                }
+
+            ]
+
+        }
+
+    },
+
+
+    Condition: {
+
+        type:
+            "Condition",
+
+        id:
+            "cond-001",
+
+        label:
+            "Condition",
+
+        description:
+            "The structured clinical problem currently being assessed.",
+
+        introducedAt:
+            1,
+
+        json: {
+
+            resourceType:
+                "Condition",
+
+            id:
+                "cond-001",
+
+            clinicalStatus: {
+
+                coding: [
+
+                    {
+
+                        code:
+                            "active"
+
+                    }
+
+                ]
+
+            },
+
+            subject: {
+
+                reference:
+                    "Patient/pat-00421"
+
+            },
+
+            code: {
+
+                text:
+                    "Chest discomfort"
+
+            }
+
+        }
+
+    },
+
+
+    Consent: {
+
+        type:
+            "Consent",
+
+        id:
+            "cons-001",
+
+        label:
+            "Consent",
+
+        description:
+            "Patient authorization for the simulated care-coordination purpose.",
+
+        introducedAt:
+            2,
+
+        json: {
+
+            resourceType:
+                "Consent",
+
+            id:
+                "cons-001",
+
+            status:
+                "active",
+
+            patient: {
+
+                reference:
+                    "Patient/pat-00421"
+
+            },
+
+            scope: {
+
+                coding: [
+
+                    {
+
+                        code:
+                            "patient-privacy"
+
+                    }
+
+                ]
+
+            },
+
+            provision: {
+
+                type:
+                    "permit"
+
+            }
+
+        }
+
+    },
+
+
+    Organization: {
+
+        type:
+            "Organization",
+
+        id:
+            "org-citycare",
+
+        label:
+            "Hospital",
+
+        description:
+            "The healthcare organization selected by the patient.",
+
+        introducedAt:
+            3,
+
+        json: {
+
+            resourceType:
+                "Organization",
+
+            id:
+                "org-citycare",
+
+            name:
+                "CityCare Heart Institute",
+
+            type: [
+
+                {
+
+                    text:
+                        "Hospital"
+
+                }
+
+            ]
+
+        }
+
+    },
+
+
+    Location: {
+
+        type:
+            "Location",
+
+        id:
+            "loc-cardio",
+
+        label:
+            "Cardiology",
+
+        description:
+            "The department/location responsible for the encounter.",
+
+        introducedAt:
+            3,
+
+        json: {
+
+            resourceType:
+                "Location",
+
+            id:
+                "loc-cardio",
+
+            name:
+                "Cardiology Department",
+
+            managingOrganization: {
+
+                reference:
+                    "Organization/org-citycare"
+
+            }
+
+        }
+
+    },
+
+
+    HealthcareService: {
+
+        type:
+            "HealthcareService",
+
+        id:
+            "svc-cardio",
+
+        label:
+            "Cardiology Service",
+
+        description:
+            "The service through which the patient seeks care.",
+
+        introducedAt:
+            3,
+
+        json: {
+
+            resourceType:
+                "HealthcareService",
+
+            id:
+                "svc-cardio",
+
+            name:
+                "Cardiology Consultation",
+
+            providedBy: {
+
+                reference:
+                    "Organization/org-citycare"
+
+            }
+
+        }
+
+    },
+
+
+    Appointment: {
+
+        type:
+            "Appointment",
+
+        id:
+            "appt-00421",
+
+        label:
+            "Appointment",
+
+        description:
+            "The scheduled interaction between patient and provider.",
+
+        introducedAt:
+            4,
+
+        json: {
+
+            resourceType:
+                "Appointment",
+
+            id:
+                "appt-00421",
+
+            status:
+                "booked",
+
+            serviceType: [
+
+                {
+
+                    text:
+                        "Cardiology consultation"
+
+                }
+
+            ],
+
+            participant: [
+
+                {
+
+                    actor: {
+
+                        reference:
+                            "Patient/pat-00421"
+
+                    }
+
+                },
+
+                {
+
+                    actor: {
+
+                        reference:
+                            "PractitionerRole/doc-007"
+
+                    }
+
+                }
+
+            ]
+
+        }
+
+    },
+
+
+    Encounter: {
+
+        type:
+            "Encounter",
+
+        id:
+            "enc-00421",
+
+        label:
+            "Encounter",
+
+        description:
+            "The actual clinical interaction between patient and care provider.",
+
+        introducedAt:
+            5,
+
+        json: {
+
+            resourceType:
+                "Encounter",
+
+            id:
+                "enc-00421",
+
+            status:
+                "in-progress",
+
+            class: {
+
+                code:
+                    "AMB"
+
+            },
+
+            subject: {
+
+                reference:
+                    "Patient/pat-00421"
+
+            },
+
+            serviceProvider: {
+
+                reference:
+                    "Organization/org-citycare"
+
+            },
+
+            location: [
+
+                {
+
+                    location: {
+
+                        reference:
+                            "Location/loc-cardio"
+
+                    }
+
+                }
+
+            ]
+
+        }
+
+    },
+
+
+    PractitionerRole: {
+
+        type:
+            "PractitionerRole",
+
+        id:
+            "doc-007",
+
+        label:
+            "Doctor Role",
+
+        description:
+            "Represents the doctor's role within the organization/service.",
+
+        introducedAt:
+            5,
+
+        json: {
+
+            resourceType:
+                "PractitionerRole",
+
+            id:
+                "doc-007",
+
+            practitioner: {
+
+                display:
+                    "Demo Cardiologist"
+
+            },
+
+            organization: {
+
+                reference:
+                    "Organization/org-citycare"
+
+            },
+
+            location: [
+
+                {
+
+                    reference:
+                        "Location/loc-cardio"
+
+                }
+
+            ]
+
+        }
+
+    },
+
+
+    Observation: {
+
+        type:
+            "Observation",
+
+        id:
+            "obs-00421",
+
+        label:
+            "Observation",
+
+        description:
+            "A clinical measurement recorded during assessment.",
+
+        introducedAt:
+            6,
+
+        json: {
+
+            resourceType:
+                "Observation",
+
+            id:
+                "obs-00421",
+
+            status:
+                "final",
+
+            subject: {
+
+                reference:
+                    "Patient/pat-00421"
+
+            },
+
+            encounter: {
+
+                reference:
+                    "Encounter/enc-00421"
+
+            },
+
+            code: {
+
+                text:
+                    "Heart rate"
+
+            },
+
+            valueQuantity: {
+
+                value:
+                    88,
+
+                unit:
+                    "beats/min"
+
+            }
+
+        }
+
+    },
+
+
+    CarePlan: {
+
+        type:
+            "CarePlan",
+
+        id:
+            "cp-00421",
+
+        label:
+            "CarePlan",
+
+        description:
+            "The doctor-approved plan that turns consultation into executable care.",
+
+        introducedAt:
+            7,
+
+        json: {
+
+            resourceType:
+                "CarePlan",
+
+            id:
+                "cp-00421",
+
+            status:
+                "active",
+
+            intent:
+                "plan",
+
+            subject: {
+
+                reference:
+                    "Patient/pat-00421"
+
+            },
+
+            encounter: {
+
+                reference:
+                    "Encounter/enc-00421"
+
+            },
+
+            activity: [
+
+                {
+
+                    detail: {
+
+                        status:
+                            "scheduled",
+
+                        code: {
+
+                            text:
+                                "Cardiac assessment"
+
+                        }
+
+                    }
+
+                },
+
+                {
+
+                    detail: {
+
+                        status:
+                            "scheduled",
+
+                        code: {
+
+                            text:
+                                "Diagnostic testing"
+
+                        }
+
+                    }
+
+                }
+
+            ]
+
+        }
+
+    },
+
+
+    Task: {
+
+        type:
+            "Task",
+
+        id:
+            "task-001",
+
+        label:
+            "Task",
+
+        description:
+            "A coordination unit used to move work through the care workflow.",
+
+        introducedAt:
+            7,
+
+        json: {
+
+            resourceType:
+                "Task",
+
+            id:
+                "task-001",
+
+            status:
+                "requested",
+
+            intent:
+                "order",
+
+            for: {
+
+                reference:
+                    "Patient/pat-00421"
+
+            },
+
+            focus: {
+
+                reference:
+                    "ServiceRequest/sr-001"
+
+            }
+
+        }
+
+    },
+
+
+    ServiceRequest: {
+
+        type:
+            "ServiceRequest",
+
+        id:
+            "sr-001",
+
+        label:
+            "ServiceRequest",
+
+        description:
+            "The clinical request for the diagnostic service.",
+
+        introducedAt:
+            7,
+
+        json: {
+
+            resourceType:
+                "ServiceRequest",
+
+            id:
+                "sr-001",
+
+            status:
+                "active",
+
+            intent:
+                "order",
+
+            subject: {
+
+                reference:
+                    "Patient/pat-00421"
+
+            },
+
+            encounter: {
+
+                reference:
+                    "Encounter/enc-00421"
+
+            },
+
+            code: {
+
+                text:
+                    "Cardiac diagnostic panel"
+
+            }
+
+        }
+
+    },
+
+
+    DiagnosticReport: {
+
+        type:
+            "DiagnosticReport",
+
+        id:
+            "dr-001",
+
+        label:
+            "Diagnostic Report",
+
+        description:
+            "The diagnostic result returned to the care workflow.",
+
+        introducedAt:
+            8,
+
+        json: {
+
+            resourceType:
+                "DiagnosticReport",
+
+            id:
+                "dr-001",
+
+            status:
+                "final",
+
+            subject: {
+
+                reference:
+                    "Patient/pat-00421"
+
+            },
+
+            basedOn: [
+
+                {
+
+                    reference:
+                        "ServiceRequest/sr-001"
+
+                }
+
+            ],
+
+            result: [
+
+                {
+
+                    reference:
+                        "Observation/obs-00421"
+
+                }
+
+            ],
+
+            conclusion:
+                "Demo result: no acute abnormality."
+
+        }
+
+    },
+
+
+    Communication: {
+
+        type:
+            "Communication",
+
+        id:
+            "comm-001",
+
+        label:
+            "Communication",
+
+        description:
+            "Records communication between patient and care team.",
+
+        introducedAt:
+            9,
+
+        json: {
+
+            resourceType:
+                "Communication",
+
+            id:
+                "comm-001",
+
+            status:
+                "completed",
+
+            subject: {
+
+                reference:
+                    "Patient/pat-00421"
+
+            },
+
+            encounter: {
+
+                reference:
+                    "Encounter/enc-00421"
+
+            },
+
+            payload: [
+
+                {
+
+                    contentString:
+                        "Doctor reviewed diagnostic result with patient during teleconsultation."
+
+                }
+
+            ]
+
+        }
+
+    },
+
+
+    Composition: {
+
+        type:
+            "Composition",
+
+        id:
+            "comp-001",
+
+        label:
+            "Case Summary",
+
+        description:
+            "The final clinical narrative that closes the consultation.",
+
+        introducedAt:
+            10,
+
+        json: {
+
+            resourceType:
+                "Composition",
+
+            id:
+                "comp-001",
+
+            status:
+                "final",
+
+            title:
+                "Cardiology consultation summary",
+
+            subject: {
+
+                reference:
+                    "Patient/pat-00421"
+
+            },
+
+            encounter: {
+
+                reference:
+                    "Encounter/enc-00421"
+
+            }
+
+        }
+
+    }
+
+};
+
+
+/* =========================================================
+   GRAPH RELATIONSHIPS
+========================================================= */
+
+const EDGES = [
+
+    ["Patient","QuestionnaireResponse"],
+
+    ["Patient","Condition"],
+
+    ["Patient","Consent"],
+
+    ["Patient","Appointment"],
+
+    ["Patient","Encounter"],
+
+    ["Organization","Location"],
+
+    ["Organization","HealthcareService"],
+
+    ["Organization","PractitionerRole"],
+
+    ["Location","Encounter"],
+
+    ["HealthcareService","Appointment"],
+
+    ["PractitionerRole","Appointment"],
+
+    ["Appointment","Encounter"],
+
+    ["Encounter","Observation"],
+
+    ["Encounter","CarePlan"],
+
+    ["Encounter","ServiceRequest"],
+
+    ["CarePlan","Task"],
+
+    ["CarePlan","ServiceRequest"],
+
+    ["ServiceRequest","DiagnosticReport"],
+
+    ["DiagnosticReport","Observation"],
+
+    ["Encounter","Communication"],
+
+    ["Encounter","Composition"]
+
+];
+
+
+/* =========================================================
+   GRAPH POSITIONS
+========================================================= */
+
+const GRAPH_POSITIONS = {
+
+    Patient:
+        [8,50],
+
+    QuestionnaireResponse:
+        [21,20],
+
+    Condition:
+        [21,50],
+
+    Consent:
+        [21,80],
+
+    Organization:
+        [38,16],
+
+    Location:
+        [38,39],
+
+    HealthcareService:
+        [38,67],
+
+    PractitionerRole:
+        [38,89],
+
+    Appointment:
+        [55,25],
+
+    Encounter:
+        [55,55],
+
+    Observation:
+        [55,84],
+
+    CarePlan:
+        [72,38],
+
+    Task:
+        [72,70],
+
+    ServiceRequest:
+        [72,86],
+
+    DiagnosticReport:
+        [88,70],
+
+    Communication:
+        [88,38],
+
+    Composition:
+        [88,16]
+
+};
+
+
+/* =========================================================
+   WORKFLOW EVENTS
+========================================================= */
+
+const EVENTS = [
+
+    {
+
+        title:
+            "Patient identity is established",
+
+        description:
+            "A patient enters the digital journey using an identity boundary. In this simulation the ABHA interaction is represented conceptually; no real authentication occurs.",
+
+        businessTitle:
+            "The patient can start the journey without creating another healthcare-specific identity.",
+
+        businessNarrative:
+            "The patient opens TokenCare and chooses to start a healthcare journey. Instead of beginning with a hospital-specific registration form, the journey starts with a trusted digital identity context.",
+
+        problem:
+            "Healthcare journeys often begin separately inside each provider system.",
+
+        solution:
+            "Create a reusable patient identity context for the journey.",
+
+        outcome:
+            "The same patient context can accompany subsequent care steps.",
+
+        impacts: [
+
+            ["1", "patient identity"],
+
+            ["1", "digital entry point"],
+
+            ["1", "reusable context"],
+
+            ["0", "clinical data yet"]
+
+        ],
+
+        technicalEvents: [
+
+            "Identity context is associated with a synthetic Patient resource.",
+
+            "A logical Patient identifier is established inside the TokenCare simulation.",
+
+            "No clinical diagnosis is created merely because identity is established."
+
+        ],
+
+        fhirChain: [
+
+            "Patient"
+
+        ],
+
+        codeResource:
+            "Patient",
+
+        activeResources:
+            ["Patient"],
+
+        pendingResources:
+            ["QuestionnaireResponse"]
+
+    },
+
+
+    {
+
+        title:
+            "AI understands the patient's problem",
+
+        description:
+            "The patient communicates naturally. AI asks clarifying questions and converts the conversation into structured clinical information for patient validation.",
+
+        businessTitle:
+            "The patient explains the problem once — the system helps make it understandable.",
+
+        businessNarrative:
+            "The patient says: “I have chest discomfort and sometimes feel short of breath.” AI asks when it started, how often it happens and whether anything makes it worse. The patient reviews the generated summary before it moves forward.",
+
+        problem:
+            "Patients may not know what information a doctor or hospital needs.",
+
+        solution:
+            "AI performs guided intake and identifies missing information.",
+
+        outcome:
+            "The care team receives a more complete starting context.",
+
+        impacts: [
+
+            ["↓", "repeated questions"],
+
+            ["↑", "information quality"],
+
+            ["↑", "patient understanding"],
+
+            ["1", "structured intake"]
+
+        ],
+
+        technicalEvents: [
+
+            "The conversational result is represented as QuestionnaireResponse.",
+
+            "A Condition resource can represent the current problem under assessment.",
+
+            "Patient remains the subject of both resources through references.",
+
+            "AI output is not automatically treated as a medical diagnosis; the human clinical workflow remains authoritative."
+
+        ],
+
+        fhirChain: [
+
+            "Patient",
+
+            "QuestionnaireResponse",
+
+            "Condition"
+
+        ],
+
+        codeResource:
+            "QuestionnaireResponse",
+
+        activeResources: [
+
+            "Patient",
+
+            "QuestionnaireResponse",
+
+            "Condition"
+
+        ],
+
+        pendingResources:
+            ["Consent"]
+
+    },
+
+
+    {
+
+        title:
+            "Patient authorizes the journey",
+
+        description:
+            "Before relevant information is used for care coordination, the patient provides consent in the simulated flow.",
+
+        businessTitle:
+            "The patient decides what happens to their information.",
+
+        businessNarrative:
+            "The patient sees why information is needed and permits the defined care-coordination purpose. The consent becomes part of the accountability trail.",
+
+        problem:
+            "Healthcare information is sensitive and cannot simply be treated as unrestricted application data.",
+
+        solution:
+            "Make authorization an explicit step in the journey.",
+
+        outcome:
+            "Data access and sharing become more accountable.",
+
+        impacts: [
+
+            ["1", "patient control"],
+
+            ["↑", "trust"],
+
+            ["↑", "accountability"],
+
+            ["1", "authorized journey"]
+
+        ],
+
+        technicalEvents: [
+
+            "Consent resource becomes active.",
+
+            "Consent references the Patient.",
+
+            "The consent concept is kept separate from the Patient resource itself.",
+
+            "The application can use consent state as a workflow gate."
+
+        ],
+
+        fhirChain: [
+
+            "Patient",
+
+            "Consent",
+
+            "QuestionnaireResponse",
+
+            "Condition"
+
+        ],
+
+        codeResource:
+            "Consent",
+
+        activeResources: [
+
+            "Patient",
+
+            "QuestionnaireResponse",
+
+            "Condition",
+
+            "Consent"
+
+        ],
+
+        pendingResources:
+            ["Organization"]
+
+    },
+
+
+    {
+
+        title:
+            "Appropriate healthcare facility is discovered",
+
+        description:
+            "The patient can select a suitable hospital/service instead of blindly arriving at a facility.",
+
+        businessTitle:
+            "The system helps the patient find the right place for the next step.",
+
+        businessNarrative:
+            "The patient chooses CityCare Heart Institute because cardiology consultation is available. The important business shift is that the patient is choosing care based on a service and availability rather than simply entering a queue.",
+
+        problem:
+            "Patients often choose a facility first and discover service availability later.",
+
+        solution:
+            "Discover organizations, departments and healthcare services before committing.",
+
+        outcome:
+            "Better matching between patient need and available care.",
+
+        impacts: [
+
+            ["↓", "wrong-department visits"],
+
+            ["↓", "unnecessary waiting"],
+
+            ["↑", "facility utilization"],
+
+            ["↑", "patient choice"]
+
+        ],
+
+        technicalEvents: [
+
+            "Organization represents the healthcare provider.",
+
+            "Location represents the department.",
+
+            "HealthcareService describes the service being offered.",
+
+            "These resources form the provider-side discovery context."
+
+        ],
+
+        fhirChain: [
+
+            "Patient",
+
+            "Condition",
+
+            "Organization",
+
+            "Location",
+
+            "HealthcareService"
+
+        ],
+
+        codeResource:
+            "HealthcareService",
+
+        activeResources: [
+
+            "Patient",
+
+            "QuestionnaireResponse",
+
+            "Condition",
+
+            "Consent",
+
+            "Organization",
+
+            "Location",
+
+            "HealthcareService"
+
+        ],
+
+        pendingResources:
+            ["Appointment"]
+
+    },
+
+
+    {
+
+        title:
+            "Digital token and appointment are created",
+
+        description:
+            "The selected healthcare service becomes a scheduled interaction. The TokenCare token carries the workflow context around the appointment.",
+
+        businessTitle:
+            "The patient gets a digital place in the care workflow.",
+
+        businessNarrative:
+            "Instead of standing at registration, the patient receives token TC-00421. The token is not merely a queue number: it represents the consultation context, status and next action.",
+
+        problem:
+            "A conventional token often knows only “who is next”.",
+
+        solution:
+            "Make the token a workflow object carrying accountable care context.",
+
+        outcome:
+            "Queue position becomes connected to the actual care journey.",
+
+        impacts: [
+
+            ["↓", "physical queue"],
+
+            ["↑", "predictability"],
+
+            ["↑", "traceability"],
+
+            ["1", "digital token"]
+
+        ],
+
+        technicalEvents: [
+
+            "Appointment represents the scheduled healthcare interaction.",
+
+            "Patient and PractitionerRole can participate in the appointment.",
+
+            "The TokenCare application maintains its workflow/token metadata around the FHIR resources.",
+
+            "FHIR does not require every TokenCare-specific concept to be forced into a single resource."
+
+        ],
+
+        fhirChain: [
+
+            "Patient",
+
+            "HealthcareService",
+
+            "Appointment"
+
+        ],
+
+        codeResource:
+            "Appointment",
+
+        activeResources: [
+
+            "Patient",
+
+            "QuestionnaireResponse",
+
+            "Condition",
+
+            "Consent",
+
+            "Organization",
+
+            "Location",
+
+            "HealthcareService",
+
+            "Appointment"
+
+        ],
+
+        pendingResources:
+            ["Encounter"]
+
+    },
+
+
+    {
+
+        title:
+            "Doctor accepts the case",
+
+        description:
+            "The case appears on the cardiology department dashboard. The doctor enters the department and accepts the token.",
+
+        businessTitle:
+            "The doctor receives the patient context before starting the consultation.",
+
+        businessNarrative:
+            "The doctor does not start with a blank screen. The patient has already explained the complaint, selected the department and created a consultation context.",
+
+        problem:
+            "Doctors frequently reconstruct patient context at the beginning of a consultation.",
+
+        solution:
+            "Deliver the case context with the workflow token.",
+
+        outcome:
+            "The consultation can start with context already available.",
+
+        impacts: [
+
+            ["↓", "repeated history"],
+
+            ["↓", "handoff friction"],
+
+            ["↑", "doctor productivity"],
+
+            ["↑", "case visibility"]
+
+        ],
+
+        technicalEvents: [
+
+            "Encounter represents the clinical interaction.",
+
+            "PractitionerRole represents the provider's role within the organization.",
+
+            "Encounter links the patient to the service provider and location.",
+
+            "The appointment transitions into an actual encounter."
+
+        ],
+
+        fhirChain: [
+
+            "Appointment",
+
+            "Encounter",
+
+            "PractitionerRole",
+
+            "Organization",
+
+            "Location"
+
+        ],
+
+        codeResource:
+            "Encounter",
+
+        activeResources: [
+
+            "Patient",
+
+            "QuestionnaireResponse",
+
+            "Condition",
+
+            "Consent",
+
+            "Organization",
+
+            "Location",
+
+            "HealthcareService",
+
+            "Appointment",
+
+            "Encounter",
+
+            "PractitionerRole"
+
+        ],
+
+        pendingResources:
+            ["Observation"]
+
+    },
+
+
+    {
+
+        title:
+            "Doctor performs clinical assessment",
+
+        description:
+            "The doctor reviews the case, studies the information and records clinical observations.",
+
+        businessTitle:
+            "The doctor spends more time interpreting the case and less time reconstructing it.",
+
+        businessNarrative:
+            "The doctor reviews the patient's complaint and records an example heart-rate observation. AI may assist with summarization or documentation, but the clinician remains responsible for the clinical assessment.",
+
+        problem:
+            "Clinical information may arrive fragmented across forms, conversations and systems.",
+
+        solution:
+            "Bring the relevant patient context into the encounter.",
+
+        outcome:
+            "A richer clinical record is created from the consultation.",
+
+        impacts: [
+
+            ["↑", "clinical context"],
+
+            ["↑", "documentation"],
+
+            ["1", "doctor accountability"],
+
+            ["↓", "manual reconstruction"]
+
+        ],
+
+        technicalEvents: [
+
+            "Observation is associated with the Patient.",
+
+            "Observation references the Encounter.",
+
+            "Condition remains part of the problem context.",
+
+            "The Encounter becomes the clinical anchor for the assessment."
+
+        ],
+
+        fhirChain: [
+
+            "Encounter",
+
+            "Patient",
+
+            "Condition",
+
+            "Observation"
+
+        ],
+
+        codeResource:
+            "Observation",
+
+        activeResources: [
+
+            "Patient",
+
+            "QuestionnaireResponse",
+
+            "Condition",
+
+            "Consent",
+
+            "Organization",
+
+            "Location",
+
+            "HealthcareService",
+
+            "Appointment",
+
+            "Encounter",
+
+            "PractitionerRole",
+
+            "Observation"
+
+        ],
+
+        pendingResources:
+            ["CarePlan"]
+
+    },
+
+
+    {
+
+        title:
+            "Doctor adds the next care workflow",
+
+        description:
+            "The doctor writes the desired next steps in raw language. AI structures the workflow for review before it becomes part of the patient journey.",
+
+        businessTitle:
+            "The consultation becomes an executable care journey.",
+
+        businessNarrative:
+            "The doctor writes: “Do cardiac assessment and diagnostic testing, then review the result.” TokenCare converts that intent into actionable workflow elements. The doctor reviews and adds them to the patient journey.",
+
+        problem:
+            "A consultation note can describe what should happen without actually coordinating the next step.",
+
+        solution:
+            "Turn clinical intent into an executable workflow.",
+
+        outcome:
+            "The patient has a visible next step rather than an isolated consultation.",
+
+        impacts: [
+
+            ["↑", "workflow continuity"],
+
+            ["↑", "accountability"],
+
+            ["↓", "manual coordination"],
+
+            ["↑", "patient visibility"]
+
+        ],
+
+        technicalEvents: [
+
+            "CarePlan represents the broader care plan.",
+
+            "Task represents executable coordination work.",
+
+            "ServiceRequest represents a requested clinical service.",
+
+            "These resources connect the consultation to future activities."
+
+        ],
+
+        fhirChain: [
+
+            "Encounter",
+
+            "CarePlan",
+
+            "Task",
+
+            "ServiceRequest"
+
+        ],
+
+        codeResource:
+            "CarePlan",
+
+        activeResources: [
+
+            "Patient",
+
+            "QuestionnaireResponse",
+
+            "Condition",
+
+            "Consent",
+
+            "Organization",
+
+            "Location",
+
+            "HealthcareService",
+
+            "Appointment",
+
+            "Encounter",
+
+            "PractitionerRole",
+
+            "Observation",
+
+            "CarePlan",
+
+            "Task",
+
+            "ServiceRequest"
+
+        ],
+
+        pendingResources:
+            ["DiagnosticReport"]
+
+    },
+
+
+    {
+
+        title:
+            "Diagnostic step is executed",
+
+        description:
+            "The next workflow element can be routed to an available diagnostic provider. Results return into the same care journey.",
+
+        businessTitle:
+            "The patient can complete the next step without restarting the entire healthcare process.",
+
+        businessNarrative:
+            "The patient sees available diagnostic options for the workflow element. Once the test is completed, the result can come back to the care journey rather than becoming another disconnected document.",
+
+        problem:
+            "Diagnostic services often become disconnected from the consultation that requested them.",
+
+        solution:
+            "Connect the diagnostic step to the originating care workflow.",
+
+        outcome:
+            "The diagnostic result becomes actionable clinical context.",
+
+        impacts: [
+
+            ["↓", "workflow fragmentation"],
+
+            ["↓", "repeat registration"],
+
+            ["↑", "result visibility"],
+
+            ["↑", "care continuity"]
+
+        ],
+
+        technicalEvents: [
+
+            "ServiceRequest identifies the requested diagnostic service.",
+
+            "Task tracks the coordination state.",
+
+            "DiagnosticReport represents the resulting report.",
+
+            "Observation can represent the underlying measured result.",
+
+            "The DiagnosticReport references the originating request."
+
+        ],
+
+        fhirChain: [
+
+            "CarePlan",
+
+            "Task",
+
+            "ServiceRequest",
+
+            "DiagnosticReport",
+
+            "Observation"
+
+        ],
+
+        codeResource:
+            "DiagnosticReport",
+
+        activeResources: [
+
+            "Patient",
+
+            "QuestionnaireResponse",
+
+            "Condition",
+
+            "Consent",
+
+            "Organization",
+
+            "Location",
+
+            "HealthcareService",
+
+            "Appointment",
+
+            "Encounter",
+
+            "PractitionerRole",
+
+            "Observation",
+
+            "CarePlan",
+
+            "Task",
+
+            "ServiceRequest",
+
+            "DiagnosticReport"
+
+        ],
+
+        pendingResources:
+            ["Communication"]
+
+    },
+
+
+    {
+
+        title:
+            "Teleconsultation / remote review",
+
+        description:
+            "The doctor reviews the result remotely and communicates the next decision to the patient.",
+
+        businessTitle:
+            "Not every follow-up requires another physical visit.",
+
+        businessNarrative:
+            "The diagnostic result is available. The doctor reviews it remotely and discusses the outcome with the patient. A suitable follow-up can therefore happen without forcing the patient to travel back to the hospital.",
+
+        problem:
+            "Physical follow-up can consume significant patient and provider time.",
+
+        solution:
+            "Use digital communication when the clinical situation permits it.",
+
+        outcome:
+            "Care becomes more flexible while remaining connected to the original encounter.",
+
+        impacts: [
+
+            ["↓", "travel"],
+
+            ["↓", "follow-up waiting"],
+
+            ["↑", "flexibility"],
+
+            ["↑", "continuity"]
+
+        ],
+
+        technicalEvents: [
+
+            "Communication represents the clinical communication.",
+
+            "Communication references the patient and encounter.",
+
+            "The DiagnosticReport remains connected to the earlier ServiceRequest.",
+
+            "The CarePlan remains the longitudinal workflow context."
+
+        ],
+
+        fhirChain: [
+
+            "DiagnosticReport",
+
+            "Observation",
+
+            "Communication",
+
+            "Encounter",
+
+            "CarePlan"
+
+        ],
+
+        codeResource:
+            "Communication",
+
+        activeResources: [
+
+            "Patient",
+
+            "QuestionnaireResponse",
+
+            "Condition",
+
+            "Consent",
+
+            "Organization",
+
+            "Location",
+
+            "HealthcareService",
+
+            "Appointment",
+
+            "Encounter",
+
+            "PractitionerRole",
+
+            "Observation",
+
+            "CarePlan",
+
+            "Task",
+
+            "ServiceRequest",
+
+            "DiagnosticReport",
+
+            "Communication"
+
+        ],
+
+        pendingResources:
+            ["Composition"]
+
+    },
+
+
+    {
+
+        title:
+            "Case is completed",
+
+        description:
+            "The doctor writes the final case summary and closes the clinical workflow.",
+
+        businessTitle:
+            "The journey has a clear accountable end state.",
+
+        businessNarrative:
+            "The doctor completes the case summary. The patient can see what happened, what was done and where the journey ended. The token is no longer just a queue number — it represents the history of a care workflow.",
+
+        problem:
+            "Healthcare workflows can end as disconnected documents without a clear journey-level state.",
+
+        solution:
+            "Close the workflow with a traceable clinical summary.",
+
+        outcome:
+            "A complete journey exists from patient entry to case closure.",
+
+        impacts: [
+
+            ["↑", "accountability"],
+
+            ["↑", "traceability"],
+
+            ["↑", "patient visibility"],
+
+            ["1", "complete journey"]
+
+        ],
+
+        technicalEvents: [
+
+            "Composition represents the final clinical summary.",
+
+            "Encounter can transition to completed.",
+
+            "CarePlan can be completed when its intended activities are finished.",
+
+            "The resulting resource graph preserves relationships across the journey."
+
+        ],
+
+        fhirChain: [
+
+            "Patient",
+
+            "Encounter",
+
+            "CarePlan",
+
+            "DiagnosticReport",
+
+            "Communication",
+
+            "Composition"
+
+        ],
+
+        codeResource:
+            "Composition",
+
+        activeResources: [
+
+            "Patient",
+
+            "QuestionnaireResponse",
+
+            "Condition",
+
+            "Consent",
+
+            "Organization",
+
+            "Location",
+
+            "HealthcareService",
+
+            "Appointment",
+
+            "Encounter",
+
+            "PractitionerRole",
+
+            "Observation",
+
+            "CarePlan",
+
+            "Task",
+
+            "ServiceRequest",
+
+            "DiagnosticReport",
+
+            "Communication",
+
+            "Composition"
+
+        ],
+
+        pendingResources: []
+
+    }
+
+];
+
+
+/* =========================================================
+   APPLICATION STATE
+========================================================= */
+
+let currentEvent = 0;
+
+let autoplay = false;
+
+let autoplayTimer = null;
+
+let selectedResource = null;
+
+
+/* =========================================================
+   DOM
+========================================================= */
+
+const workflowList =
+    document.getElementById(
+        "workflowList"
+    );
+
+const businessPanel =
+    document.getElementById(
+        "businessPanel"
+    );
+
+const techPanel =
+    document.getElementById(
+        "techPanel"
+    );
+
+const caseTitle =
+    document.getElementById(
+        "caseTitle"
+    );
+
+const caseDescription =
+    document.getElementById(
+        "caseDescription"
+    );
+
+const progressText =
+    document.getElementById(
+        "progressText"
+    );
+
+const progressValue =
+    document.getElementById(
+        "progressValue"
+    );
+
+const graphNodes =
+    document.getElementById(
+        "graphNodes"
+    );
+
+const graphSvg =
+    document.getElementById(
+        "graphSvg"
+    );
+
+const inspector =
+    document.getElementById(
+        "inspector"
+    );
+
+const inspectorTitle =
+    document.getElementById(
+        "inspectorTitle"
+    );
+
+const inspectorBody =
+    document.getElementById(
+        "inspectorBody"
+    );
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHTML(
+    value
+) {
+
+    return String(value)
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+        .replaceAll(
+            ">",
+            "&gt;"
+        );
+
+}
+
+
+/* =========================================================
+   RENDER WORKFLOW
+========================================================= */
+
+function renderWorkflow() {
+
+    workflowList.innerHTML = "";
+
+    EVENTS.forEach(
+        (event,index) => {
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+            item.className =
+                "workflow-item " +
+                (
+                    index === currentEvent
+                        ? "active "
+                        : ""
+                ) +
+                (
+                    index < currentEvent
+                        ? "completed"
+                        : ""
+                );
+
+            item.innerHTML = `
+
+                <div class="workflow-number">
+
+                    ${
+                        index < currentEvent
+                            ? "✓"
+                            : index + 1
+                    }
+
+                </div>
+
+                <div>
+
+                    <div class="workflow-name">
+                        ${event.title}
+                    </div>
+
+                    <div class="workflow-role">
+                        ${getWorkflowRole(index)}
+                    </div>
+
+                </div>
+
+            `;
+
+            item.onclick = () => {
+
+                currentEvent =
+                    index;
+
+                render();
+
+            };
+
+            workflowList.appendChild(
+                item
+            );
+
+        }
+    );
+
+
+    progressText.textContent =
+        `${currentEvent + 1} / ${EVENTS.length}`;
+
+
+    progressValue.style.width =
+        (
+            (
+                currentEvent + 1
+            )
+            /
+            EVENTS.length
+            *
+            100
+        )
+        + "%";
+
+}
+
+
+function getWorkflowRole(
+    index
+) {
+
+    const roles = [
+
+        "Patient",
+
+        "Patient + AI",
+
+        "Patient",
+
+        "Patient + ecosystem",
+
+        "Patient + TokenCare",
+
+        "Doctor",
+
+        "Doctor",
+
+        "Doctor + AI",
+
+        "Lab / Diagnostic",
+
+        "Doctor + Patient",
+
+        "Doctor + Patient"
+
+    ];
+
+    return roles[index];
+
+}
+
+
+/* =========================================================
+   BUSINESS PANEL
+========================================================= */
+
+function renderBusiness() {
+
+    const event =
+        EVENTS[currentEvent];
+
+
+    businessPanel.innerHTML = `
+
+        <div class="token-bar">
+
+            <div class="token-id">
+                TOKEN / TC-00421
+            </div>
+
+            <div class="token-state">
+                ${getTokenState()}
+            </div>
+
+        </div>
+
+
+        <div class="story-label">
+            Human-readable encounter
+        </div>
+
+        <div class="story-title">
+            ${event.businessTitle}
+        </div>
+
+        <p class="story-text">
+            ${event.businessNarrative}
+        </p>
+
+
+        <div class="business-block">
+
+            <div class="business-block-title">
+                The problem
+            </div>
+
+            <p>
+                ${event.problem}
+            </p>
+
+        </div>
+
+
+        <div class="business-block">
+
+            <div class="business-block-title">
+                What TokenCare changes
+            </div>
+
+            <p>
+                ${event.solution}
+            </p>
+
+        </div>
+
+
+        <div class="business-block">
+
+            <div class="business-block-title">
+                Result for the ecosystem
+            </div>
+
+            <p>
+                ${event.outcome}
+            </p>
+
+        </div>
+
+
+        <div class="business-block">
+
+            <div class="business-block-title">
+                Business impact
+            </div>
+
+            <div class="impact-grid">
+
+                ${event.impacts.map(
+                    impact => `
+
+                        <div class="impact">
+
+                            <strong>
+                                ${impact[0]}
+                            </strong>
+
+                            <span>
+                                ${impact[1]}
+                            </span>
+
+                        </div>
+
+                    `
+                ).join("")}
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   TOKEN STATE
+========================================================= */
+
+function getTokenState() {
+
+    if (currentEvent === 0)
+        return "IDENTITY";
+
+    if (currentEvent === 1)
+        return "UNDERSTANDING";
+
+    if (currentEvent === 2)
+        return "AUTHORIZED";
+
+    if (currentEvent === 3)
+        return "CARE FOUND";
+
+    if (currentEvent === 4)
+        return "BOOKED";
+
+    if (currentEvent === 5)
+        return "ACCEPTED";
+
+    if (currentEvent === 6)
+        return "IN CONSULTATION";
+
+    if (currentEvent === 7)
+        return "CARE WORKFLOW";
+
+    if (currentEvent === 8)
+        return "DIAGNOSTICS";
+
+    if (currentEvent === 9)
+        return "REMOTE REVIEW";
+
+    return "COMPLETED";
+
+}
+
+
+/* =========================================================
+   TECH PANEL
+========================================================= */
+
+function renderTech() {
+
+    const event =
+        EVENTS[currentEvent];
+
+
+    const chain =
+        event.fhirChain;
+
+
+    techPanel.innerHTML = `
+
+        <div class="story-label">
+            FHIR evolution
+        </div>
+
+        <div class="story-title">
+            One event creates / changes a set of resources
+        </div>
+
+
+        <div class="fhir-flow">
+
+            <div class="fhir-flow-title">
+                Current resource evolution
+            </div>
+
+            <div class="fhir-flow-row">
+
+                ${chain.map(
+                    (resource,index) => `
+
+                        <button
+                            class="
+                                fhir-chip
+                                ${
+                                    resource ===
+                                    event.codeResource
+                                        ? "active"
+                                        : ""
+                                }
+                            "
+                            onclick="
+                                openInspector(
+                                    '${resource}'
+                                )
+                            "
+                        >
+
+                            ${resource}
+
+                        </button>
+
+                        ${
+                            index <
+                            chain.length - 1
+                                ? `
+                                    <span
+                                        class="fhir-arrow"
+                                    >
+                                        →
+                                    </span>
+                                  `
+                                : ""
+                        }
+
+                    `
+                ).join("")}
+
+            </div>
+
+        </div>
+
+
+        <div>
+
+            ${event.technicalEvents.map(
+                (text,index) => `
+
+                    <div class="tech-event">
+
+                        <div
+                            class="tech-event-dot"
+                        ></div>
+
+                        <div
+                            class="tech-event-content"
+                        >
+
+                            <div class="tech-event-title">
+                                Step ${index + 1}
+                            </div>
+
+                            <div class="tech-event-text">
+                                ${text}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                `
+            ).join("")}
+
+        </div>
+
+
+        <div class="code-box">
+
+            <div class="code-header">
+
+                <span>
+                    Current resource snapshot
+                </span>
+
+                <span>
+                    FHIR R4-style example
+                </span>
+
+            </div>
+
+            <pre>${escapeHTML(
+                JSON.stringify(
+                    RESOURCES[event.codeResource].json,
+                    null,
+                    2
+                )
+            )}</pre>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   GRAPH
+========================================================= */
+
+function renderGraph() {
+
+    graphNodes.innerHTML = "";
+
+    graphSvg.innerHTML = "";
+
+
+    const current =
+        EVENTS[currentEvent];
+
+
+    const active =
+        new Set(
+            current.activeResources
+        );
+
+
+    const pending =
+        new Set(
+            current.pendingResources
+        );
+
+
+    /* -----------------------------------------------------
+       EDGES
+    ----------------------------------------------------- */
+
+    EDGES.forEach(
+        edge => {
+
+            const from =
+                GRAPH_POSITIONS[
+                    edge[0]
+                ];
+
+            const to =
+                GRAPH_POSITIONS[
+                    edge[1]
+                ];
+
+
+            if (!from || !to)
+                return;
+
+
+            const x1 =
+                from[0];
+
+            const y1 =
+                from[1];
+
+            const x2 =
+                to[0];
+
+            const y2 =
+                to[1];
+
+
+            const line =
+                document.createElementNS(
+                    "http://www.w3.org/2000/svg",
+                    "line"
+                );
+
+
+            line.setAttribute(
+                "x1",
+                x1 + "%"
+            );
+
+            line.setAttribute(
+                "y1",
+                y1 + "%"
+            );
+
+            line.setAttribute(
+                "x2",
+                x2 + "%"
+            );
+
+            line.setAttribute(
+                "y2",
+                y2 + "%"
+            );
+
+
+            const isActive =
+                active.has(edge[0]) &&
+                active.has(edge[1]);
+
+
+            const isPending =
+                pending.has(edge[1]) &&
+                active.has(edge[0]);
+
+
+            line.classList.add(
+                "graph-edge"
+            );
+
+
+            if (isActive) {
+
+                line.classList.add(
+                    "active"
+                );
+
+            }
+
+
+            if (isPending) {
+
+                line.classList.add(
+                    "pending"
+                );
+
+            }
+
+
+            graphSvg.appendChild(
+                line
+            );
+
+        }
+    );
+
+
+    /* -----------------------------------------------------
+       NODES
+    ----------------------------------------------------- */
+
+    Object.entries(
+        GRAPH_POSITIONS
+    ).forEach(
+        ([name,position]) => {
+
+            const resource =
+                RESOURCES[name];
+
+
+            if (!resource)
+                return;
+
+
+            const node =
+                document.createElement(
+                    "div"
+                );
+
+
+            const isActive =
+                active.has(name);
+
+            const isPending =
+                pending.has(name);
+
+
+            node.className =
+                "graph-node " +
+                (
+                    isActive
+                        ? (
+                            name ===
+                            current.codeResource
+                                ? "active"
+                                : "complete"
+                        )
+                        : ""
+                ) +
+                (
+                    isPending
+                        ? " pending"
+                        : ""
+                );
+
+
+            node.style.left =
+                position[0] + "%";
+
+            node.style.top =
+                position[1] + "%";
+
+
+            node.innerHTML = `
+
+                <div
+                    class="graph-node-title"
+                >
+                    ${resource.label}
+                </div>
+
+                <div
+                    class="graph-node-state"
+                >
+
+                    ${
+                        name ===
+                        current.codeResource
+                            ? "CHANGED NOW"
+                            : isPending
+                                ? "NEXT"
+                                : isActive
+                                    ? "ACTIVE"
+                                    : "NOT CREATED"
+
+                    }
+
+                </div>
+
+            `;
+
+
+            node.onclick =
+                () => openInspector(
+                    name
+                );
+
+
+            graphNodes.appendChild(
+                node
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   INSPECTOR
+========================================================= */
+
+function openInspector(
+    resourceName
+) {
+
+    const resource =
+        RESOURCES[
+            resourceName
+        ];
+
+
+    if (!resource)
+        return;
+
+
+    selectedResource =
+        resourceName;
+
+
+    const references =
+        extractReferences(
+            resource.json
+        );
+
+
+    inspectorTitle.textContent =
+        `${resource.type} · ${resource.id}`;
+
+
+    inspectorBody.innerHTML = `
+
+        <div class="inspector-description">
+            ${resource.description}
+        </div>
+
+
+        <div class="inspector-field">
+
+            <label>
+                resourceType
+            </label>
+
+            <span>
+                ${resource.type}
+            </span>
+
+        </div>
+
+
+        <div class="inspector-field">
+
+            <label>
+                logical id
+            </label>
+
+            <span>
+                ${resource.id}
+            </span>
+
+        </div>
+
+
+        <div class="inspector-field">
+
+            <label>
+                introduced
+            </label>
+
+            <span>
+                Workflow event ${resource.introducedAt + 1}
+            </span>
+
+        </div>
+
+
+        <div class="inspector-field">
+
+            <label>
+                current state
+            </label>
+
+            <span>
+                ${
+                    resource.introducedAt <= currentEvent
+                        ? "Present in journey"
+                        : "Not yet created"
+                }
+            </span>
+
+        </div>
+
+
+        <div
+            style="
+                margin:12px 0 7px;
+                color:var(--muted);
+                font-size:8px;
+                text-transform:uppercase;
+                letter-spacing:.1em;
+            "
+        >
+            References
+        </div>
+
+
+        <div
+            style="
+                display:flex;
+                flex-wrap:wrap;
+                gap:5px;
+                margin-bottom:12px;
+            "
+        >
+
+            ${
+                references.length
+                    ?
+
+                    references.map(
+                        reference => `
+
+                            <span
+                                class="fhir-chip"
+                                style="cursor:default"
+                            >
+                                ${reference}
+                            </span>
+
+                        `
+                    ).join("")
+
+                    :
+
+                    `
+                    <span
+                        style="
+                            color:var(--muted);
+                            font-size:8px;
+                        "
+                    >
+                        No explicit reference
+                        in this example.
+                    </span>
+                    `
+            }
+
+        </div>
+
+
+        <div
+            style="
+                color:var(--muted);
+                font-size:8px;
+                text-transform:uppercase;
+                letter-spacing:.1em;
+                margin-bottom:6px;
+            "
+        >
+            Resource JSON
+        </div>
+
+
+        <pre class="inspector-code">${escapeHTML(
+            JSON.stringify(
+                resource.json,
+                null,
+                2
+            )
+        )}</pre>
+
+    `;
+
+
+    inspector.classList.add(
+        "open"
+    );
+
+}
+
+
+/* =========================================================
+   CLOSE INSPECTOR
+========================================================= */
+
+document
+    .getElementById(
+        "closeInspector"
+    )
+    .onclick = () => {
+
+        inspector.classList.remove(
+            "open"
+        );
+
+    };
+
+
+/* =========================================================
+   REFERENCE EXTRACTION
+========================================================= */
+
+function extractReferences(
+    object
+) {
+
+    const result = [];
+
+
+    function walk(
+        value
+    ) {
+
+        if (!value)
+            return;
+
+
+        if (
+            typeof value !==
+            "object"
+        ) {
+
+            return;
+
+        }
+
+
+        Object.entries(
+            value
+        ).forEach(
+            ([key,val]) => {
+
+                if (
+                    key ===
+                    "reference" &&
+                    typeof val ===
+                    "string"
+                ) {
+
+                    result.push(
+                        val
+                    );
+
+                }
+
+                else {
+
+                    walk(val);
+
+                }
+
+            }
+        );
+
+    }
+
+
+    walk(object);
+
+
+    return [
+        ...new Set(result)
+    ];
+
+}
+
+
+/* =========================================================
+   RENDER EVERYTHING
+========================================================= */
+
+function render() {
+
+    const event =
+        EVENTS[currentEvent];
+
+
+    caseTitle.textContent =
+        event.title;
+
+
+    caseDescription.textContent =
+        event.description;
+
+
+    renderWorkflow();
+
+    renderBusiness();
+
+    renderTech();
+
+    renderGraph();
+
+
+    if (
+        selectedResource &&
+        RESOURCES[selectedResource]
+    ) {
+
+        /* keep inspector content */
+
+    }
+
+}
+
+
+/* =========================================================
+   NEXT
+========================================================= */
+
+function nextEvent() {
+
+    if (
+        currentEvent <
+        EVENTS.length - 1
+    ) {
+
+        currentEvent++;
+
+    }
+
+    else {
+
+        currentEvent = 0;
+
+    }
+
+
+    render();
+
+}
+
+
+/* =========================================================
+   PREVIOUS
+========================================================= */
+
+function previousEvent() {
+
+    if (
+        currentEvent > 0
+    ) {
+
+        currentEvent--;
+
+    }
+
+    else {
+
+        currentEvent =
+            EVENTS.length - 1;
+
+    }
+
+
+    render();
+
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+document
+    .getElementById(
+        "nextBtn"
+    )
+    .onclick =
+    nextEvent;
+
+
+document
+    .getElementById(
+        "previousBtn"
+    )
+    .onclick =
+    previousEvent;
+
+
+/* =========================================================
+   GRAPH RESET
+========================================================= */
+
+document
+    .getElementById(
+        "resetGraphBtn"
+    )
+    .onclick = () => {
+
+        currentEvent =
+            0;
+
+        render();
+
+    };
+
+
+/* =========================================================
+   SHOW ALL
+========================================================= */
+
+document
+    .getElementById(
+        "showAllBtn"
+    )
+    .onclick = () => {
+
+        EVENTS[
+            currentEvent
+        ].activeResources =
+            Object.keys(
+                RESOURCES
+            );
+
+        renderGraph();
+
+    };
+
+
+/* =========================================================
+   AUTOPLAY
+========================================================= */
+
+const playBtn =
+    document.getElementById(
+        "playBtn"
+    );
+
+
+playBtn.onclick = () => {
+
+    autoplay =
+        !autoplay;
+
+
+    if (autoplay) {
+
+        playBtn.textContent =
+            "❚❚ Pause";
+
+
+        autoplayTimer =
+            setInterval(
+                () => {
+
+                    nextEvent();
+
+                },
+                4200
+            );
+
+    }
+
+    else {
+
+        playBtn.textContent =
+            "▶ Auto play";
+
+
+        clearInterval(
+            autoplayTimer
+        );
+
+    }
+
+};
+
+
+/* =========================================================
+   KEYBOARD NAVIGATION
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key ===
+            "ArrowRight"
+        ) {
+
+            nextEvent();
+
+        }
+
+        if (
+            event.key ===
+            "ArrowLeft"
+        ) {
+
+            previousEvent();
+
+        }
+
+        if (
+            event.key ===
+            "Escape"
+        ) {
+
+            inspector.classList.remove(
+                "open"
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   INITIAL RENDER
+========================================================= */
+
+render();
+
+</script>
+
+</body>
+</html>
